@@ -13,8 +13,12 @@ botao = st.sidebar.button("Buscar Cotação 🚀")
 
 link = f"https://economia.awesomeapi.com.br/last/{selecao}-BRL"
 
-dicionario = requests.get(link).json()
-df_cotacoes = pd.DataFrame(dicionario).T
+disfarce = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+
+
+link = f"https://economia.awesomeapi.com.br/last/{selecao}-BRL"
+dicionario = requests.get(link, headers=disfarce).json()
+df_cotacoes = pd.DataFrame.from_dict(dicionario, orient="index")
 
 df_filtrado = df_cotacoes[["name", "high", "low", "bid"]]
 df_filtrado[["high", "low", "bid"]] = df_filtrado[["high", "low", "bid"]].astype(float)
@@ -39,7 +43,7 @@ st.markdown("---")
 st.subheader(f"📊 Histórico de 30 Dias ({selecao})")
 
 link_historico = f"https://economia.awesomeapi.com.br/json/daily/{selecao}-BRL/30"
-resposta_hist = requests.get(link_historico).json()
+resposta_hist = requests.get(link_historico, headers=disfarce).json()
 
 df_hist = pd.DataFrame(resposta_hist)
 df_hist["bid"] = df_hist["bid"].astype(float)
